@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const htmlWebpackPlugin = new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, "examples/src/index.html"),
+    template: path.resolve(__dirname, "examples/public/index.html"),
     filename: "index.html"
 });
 
@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
         : '/react-location'; //because of gh-pages
 
     return {
-        entry: "./examples/src/index.js",
+        entry: "./examples/src/app/index.js",
         output: {
             filename: "bundle.js",
             path: path.resolve(__dirname, "examples/dist"),

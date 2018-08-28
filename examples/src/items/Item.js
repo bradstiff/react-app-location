@@ -1,5 +1,5 @@
 import React from 'react';
-import { Items, Categories } from './Mocks';
+import { Items, Categories } from './ItemMocks';
 
 export default ({ id }) => {
     const item = Items.find(item => item.id === id);

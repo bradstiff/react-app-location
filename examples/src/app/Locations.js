@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import Location from '../../src/Location';
+import Location from '../../../src/Location';
 
 const integer = Yup.number().integer();
 const naturalNbr = integer.moreThan(-1);

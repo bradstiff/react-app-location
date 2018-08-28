@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ItemListLocation, ItemLocation } from './Locations';
-import { Items, Categories } from './Mocks';
+import { ItemListLocation, ItemLocation } from '../app/Locations';
+import { Items, Categories } from './ItemMocks';
 
 class ItemList extends React.Component {
     replaceLocation(token) {
