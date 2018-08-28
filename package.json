@@ -2,7 +2,7 @@
   "name": "react-location",
   "version": "1.0.0",
   "description": "A package to avoid repetition with Routes and reduce boilerplate with location param parsing in React Apps",
-  "main": "index.js",
+  "main": "./dist/Location.js",
   "repository": "https://github.com/bradstiff/react-location.git",
   "scripts": {
     "start": "webpack-dev-server --mode development",
