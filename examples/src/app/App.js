@@ -10,20 +10,35 @@ import Item from '../items/Item';
 
 const styles = {
     container: {
-        maxWidth: 700,
+        display: 'flex',
+        width: 500,
         margin: 'auto',
+        minHeight: 300,
+    },
+    menuContainer: {
+        width: 60,
+        flex: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        marginRight: 20,
+        backgroundColor: 'silver',
+    },
+    menu: {
+        listStyle: 'none',
+        paddingLeft: 5,
     },
     link: {
-        padding: 10,
     },
 };
 
 export default () => (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
         <div style={styles.container}>
-            <div>
-                <Link to={Locations.Home.toUrl()} style={styles.link}>Home</Link>
-                <Link to={Locations.ItemList.toUrl()} style={styles.link}>Items</Link>
+            <div style={styles.menuContainer}>
+                <ul style={styles.menu}>
+                    <li><Link to={Locations.Home.toUrl()} style={styles.link}>Home</Link></li>
+                    <li><Link to={Locations.ItemList.toUrl()} style={styles.link}>Items</Link></li>
+                </ul>
             </div>
             <Switch>
                 {Locations.Home.toRoute({ component: Home, invalid: NotFound }, true)}

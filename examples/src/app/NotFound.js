@@ -5,11 +5,9 @@ import Locations from './Locations';
 
 const styles = {
     container: {
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
+        width: 500,
+        margin: 'auto',
+    },
 };
 
 const NotFound = () => (

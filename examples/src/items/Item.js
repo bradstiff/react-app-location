@@ -1,21 +1,20 @@
 import React from 'react';
-import { Items, Categories } from './ItemMocks';
+import { Items, itemCategory, itemStatus, Categories } from './ItemMocks';
 
 export default ({ id }) => {
     const item = Items.find(item => item.id === id);
-    const category = Categories.find(category => category.id === item.categoryID);
 
     return <div>
-        <h2>{item.name}</h2>
+        <h3>{item.name}</h3>
         <table>
             <tbody>
                 <tr>
                     <th align='right'>Category: </th>
-                    <td>{category.name}</td>
+                    <td>{itemCategory(item)}</td>
                 </tr>
                 <tr>
                     <th align='right'>Status: </th>
-                    <td>{item.isActive ? 'Active' : 'Inactive'}</td>
+                    <td>{itemStatus(item)}</td>
                 </tr>
             </tbody>
         </table>
