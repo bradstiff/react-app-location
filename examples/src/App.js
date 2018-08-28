@@ -8,14 +8,20 @@ import Item from './Item';
 import NotFound from './NotFound';
 
 const styles = {
+    container: {
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     link: {
         padding: 10,
     },
 };
 
 export default () => (
-    <BrowserRouter>
-        <div>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
+        <div style={styles.container}>
             <Link to={Locations.Home.toUrl()} style={styles.link}>Home</Link>
             <Link to={Locations.ItemList.toUrl()} style={styles.link}>Items</Link>
             <Switch>

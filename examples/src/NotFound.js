@@ -17,9 +17,9 @@ const NotFound = () => (
         <div>
             <h1>Page Not Found</h1>
             <h3>Looks like you've followed a broken link or entered a URL that doesn't exist on this site.</h3>
-            <Button color='primary' component={Link} to={Locations.Home.toUrl()}>
+            <Link to={Locations.Home.toUrl()}>
                 &lt; Back to Home
-            </Button>
+            </Link>
         </div>
     </div>
 );

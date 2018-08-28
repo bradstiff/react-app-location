@@ -9,7 +9,7 @@
     "test": "jest",
     "transpile": "babel src -d dist --copy-files",
     "prepublishOnly": "npm run transpile",
-    "build": "webpack --mode production",
+    "build": "webpack --mode production && cp examples/src/404.html examples/dist/404.html",
     "deploy": "gh-pages -d examples/dist",
     "publish-demo": "npm run build && npm run deploy"
   },
