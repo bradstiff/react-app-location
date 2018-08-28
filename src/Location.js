@@ -38,7 +38,9 @@ export default class Location {
                 .keys(tokens || {})
                 .filter(key => this._qsTokenKeys.includes(key))
                 .reduce((acc, key) => {
-                    const value = tokens[key];
+                    const value = tokens[key] === 'undefined' ? undefined
+                        : tokens[key] === 'null' ? null
+                        : tokens[key];
                     const tokenDef = this._qsTokens[key];
                     return tokenDef.default() === value
                         ? acc //avoid query string clutter: don't serialize values that are the same as the default
@@ -58,8 +60,12 @@ export default class Location {
 
     toRoute(renderOptions, exact = false, strict = false, sensitive = false) {
         const { component, render, children, invalid } = renderOptions;
-        warning(component || render || children, "renderOptions must include either component, render or children prop");
-        warning(invalid, "renderOptions must include an invalid prop, which is the component to render when the location contains an invalid token");
+        if (!(component || render || children)) {
+            throw new Error('Location.toRoute requires renderOptions argument, which must include either component, render or children property');
+        }
+        if (!invalid) {
+            throw new Error('Location.toRoute requires renderOptions argument, which must include an invalid property, indicating the component to render when the a matched location contains an invalid token');
+        }
 
         const routeProps = {
             path: this.path,
@@ -75,7 +81,7 @@ export default class Location {
         } else if (typeof children === "function") {
             return <Route {...routeProps} children={this.wrapChildrenPropWithTokens(children, invalid)} />
         } else if (children && !isEmptyChildren(children)) {
-            //todo: Maybe this case shouldn't be supported
+            warning(true, 'Location tokens are not passed as props to children arrays. Use a children function prop if needed.');
             return <Route {...routeProps} children={children} />
         }
     }

@@ -5,14 +5,17 @@ const integer = Yup.number().integer();
 const naturalNbr = integer.moreThan(-1);
 const wholeNbr = integer.positive();
 
-const Locations = {
-    Home: new Location('/'),
-    Items: new Location('/items', null, {
-        page: naturalNbr.default(0),
-        isActive: Yup.boolean(),
-        categoryID: wholeNbr.nullable(),
-    }),
-    Item: new Location('/item/:id', { id: wholeNbr.required() }),
-};
+export const HomeLocation = new Location('/');
 
-export default Locations;
+export const ItemListLocation = new Location('/items', null, {
+    isActive: Yup.boolean(),
+    categoryID: wholeNbr.nullable(),
+});
+
+export const ItemLocation = new Location('/item/:id', { id: wholeNbr.required() });
+
+export default {
+    Home: HomeLocation,
+    ItemList: ItemListLocation,
+    Item: ItemLocation,
+};

@@ -1,11 +1,11 @@
 {
   "name": "react-location",
   "version": "1.0.0",
-  "description": "A package to reduce repetition and boilerplate with app locations",
+  "description": "A package to avoid repetition with Routes and reduce boilerplate with location param parsing in React Apps",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --mode development",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "react",
@@ -20,13 +20,17 @@
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.4.2",
     "babel-loader": "^8.0.0",
     "css-loader": "^0.28.11",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^23.5.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-router-dom": "^4.3.1",
     "react-testing-library": "^5.0.0",
+    "regenerator-runtime": "^0.12.1",
     "style-loader": "^0.23.0",
     "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0",
@@ -36,6 +40,12 @@
     "prop-types": "^15.6.2",
     "querystringify": "^2.0.0",
     "warning": "^4.0.2",
-    "yup": "^0.26.2"
+    "yup": "^0.26.3"
+  },
+  "jest": {
+    "roots": [
+      "test"
+    ],
+    "testRegex": "\\.js"
   }
 }
