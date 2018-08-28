@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "A package to avoid repetition with Routes and reduce boilerplate with location param parsing in React Apps",
   "main": "index.js",
+  "repository": "https://github.com/bradstiff/react-location.git",
   "scripts": {
     "start": "webpack-dev-server --mode development",
-    "test": "jest"
+    "test": "jest",
+    "transpile": "babel src -d dist --copy-files",
+    "prepublishOnly": "npm run transpile"
   },
   "keywords": [
     "react",
@@ -16,6 +19,7 @@
   "author": "Brad Stiff",
   "license": "MIT",
   "devDependencies": {
+    "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
@@ -35,6 +39,10 @@
     "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.6"
+  },
+  "peerDependencies": {
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2"
   },
   "dependencies": {
     "prop-types": "^15.6.2",
