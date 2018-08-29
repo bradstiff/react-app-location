@@ -29,9 +29,9 @@ const ArticleLocation = new Location('/articles/:id', { id: Yup.number().integer
 const App = () => (
     <BrowserRouter>
         <Switch>
-			{/* Regular Route */}
+            {/* Regular Route */}
             <Route path={HomeLocation.path} component={Home} exact />
-			{/* Route with params passed as props to your component */}
+            {/* Route with params passed as props to your component */}
             {ArticleLocation.toRoute({ component: Article, invalid: NotFound }, true)}
             <Route component={NotFound} />
         </Switch>
@@ -39,29 +39,29 @@ const App = () => (
 );
 
 const Home = () => (
-	<div>
-		<header>Articles</header>
-		<ul>
-			{/* <Link to={'/articles/1'}>Article 1</Link> */}
-			<li>{ArticleLocation.toLink('Article 1', {id: 1})}</li>
-			{/* <Link to={'/articles/2'}>Article 2</Link> */} 
-			<li>{ArticleLocation.toLink('Article 2', {id: 2})}</li> 
-			{/* Also works */}
-			<li><Link to={ArticleLocation.toUrl({id: 3})}>Article 3</Link></li>  
-			{/* Clicking results in <NotFound /> */}
-			<li><Link to={'/articles/not-an-int'}>Article 4 (invalid)</Link></li>  
-		</ul>
-	</div>
+    <div>
+        <header>Articles</header>
+        <ul>
+            {/* <Link to={'/articles/1'}>Article 1</Link> */}
+            <li>{ArticleLocation.toLink('Article 1', {id: 1})}</li>
+            {/* <Link to={'/articles/2'}>Article 2</Link> */} 
+            <li>{ArticleLocation.toLink('Article 2', {id: 2})}</li> 
+            {/* Also works */}
+            <li><Link to={ArticleLocation.toUrl({id: 3})}>Article 3</Link></li>  
+            {/* Clicking results in <NotFound /> */}
+            <li><Link to={'/articles/not-an-int'}>Article 4 (invalid)</Link></li>  
+        </ul>
+    </div>
 );
 
 //id is parsed from the URL, cast to int, and provided in props
 const Article = ({id}) => <header>`Article ${id}`</header>;
 
 const NotFound = () => (
-	<div>
-		<header>Page not found</header>
-		<p>Looks like you have followed a broken link or entered a URL that does not exist on this site.</p>
-	</div>
+    <div>
+        <header>Page not found</header>
+        <p>Looks like you have followed a broken link or entered a URL that does not exist on this site.</p>
+    </div>
 );
 ```
 
@@ -85,10 +85,6 @@ const NotFound = () => (
 
 Defines a `Location`.
 
-**`Location.toRoute(routeOptions: {component, render: func, children: func, invalid}, exact: bool, strict: bool, sensitive: bool)`**
-
-Renders a React Router 4 `Route` which parses params and provides them as props to your component. 
-
 **`Location.toUrl(params: object)`**
 
 Generates a URL with param values plugged in.
@@ -97,9 +93,13 @@ Generates a URL with param values plugged in.
 
 Generates a React Router 4 `Link` passing the URL as the `to` prop.
 
+**`Location.toRoute(routeOptions: {component, render: func, children: func, invalid}, exact: bool, strict: bool, sensitive: bool)`**
+
+Renders a React Router 4 `Route` which parses params and passes them as props to your component. 
+
 **`Location.path`**
 
-Returns the path property which you can use when building a Route by hand without automatic param parsing.
+Returns the path property which you can use when building a Route by hand, e.g., without params passed as props.
 
 ## Development
 
