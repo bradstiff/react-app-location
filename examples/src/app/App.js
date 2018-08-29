@@ -15,7 +15,7 @@ const styles = {
         margin: 'auto',
         minHeight: 300,
     },
-    menuContainer: {
+    navContainer: {
         width: 60,
         flex: 'none',
         display: 'flex',
@@ -23,7 +23,7 @@ const styles = {
         marginRight: 20,
         backgroundColor: 'silver',
     },
-    menu: {
+    nav: {
         listStyle: 'none',
         paddingLeft: 5,
     },
@@ -34,12 +34,12 @@ const styles = {
 export default () => (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
         <div style={styles.container}>
-            <div style={styles.menuContainer}>
-                <ul style={styles.menu}>
+            <nav style={styles.navContainer}>
+                <ul style={styles.nav}>
                     <li><Link to={Locations.Home.toUrl()} style={styles.link}>Home</Link></li>
                     <li><Link to={Locations.ItemList.toUrl()} style={styles.link}>Items</Link></li>
                 </ul>
-            </div>
+            </nav>
             <Switch>
                 {Locations.Home.toRoute({ component: Home, invalid: NotFound }, true)}
                 {Locations.ItemList.toRoute({ component: ItemList, invalid: NotFound }, true)}

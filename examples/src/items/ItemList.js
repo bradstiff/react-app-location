@@ -41,7 +41,7 @@ class ItemList extends React.Component {
         const { isActive, categoryID } = this.props;
         return (
             <div>
-                <div style={styles.toolbar}>
+                <header style={styles.toolbar}>
                     <h3>Items</h3>
                     <div style={styles.filter}>
                         <select id='isActive' value={isActive} onChange={this.handleSelectStatus}>
@@ -56,7 +56,7 @@ class ItemList extends React.Component {
                             ]}
                         </select>
                     </div>
-                </div>
+                </header>
                 <table>
                     <thead>
                         <tr>

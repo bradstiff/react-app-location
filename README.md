@@ -1,2 +1,127 @@
-# react-location
-A package to avoid repetition with Routes and reduce boilerplate with location param parsing in React Apps
+# react-app-location
+A package to avoid repetition with Routes and URLs, and reduce boilerplate with location param parsing in React Apps
+## Install
+
+`npm install react-app-location --save`
+
+## Usage
+
+A `Location` is an endpoint that your app supports.  It specifies a path, and can optionally specify path and query string parameters. 
+
+A `Location` keeps your code DRY as the `Location` is defined in one place and used throughout your code to generate `Routes`, `Links` and URLs. 
+
+When generating a URL, you can provide a literal object of values, and the values will be mapped to parameters and inserted into the resulting URL.
+
+Path and query string parameters are specified as Yup schemas. A `Route` that is generated from a `Location` automatically parses the URL and extracts 
+the path and query string parameters. These are validated according to the schema, cast to the appropriate data types, and passed as props to your 
+component.  If a required parameter is missing or a parameter fails validation, the `Route` will render the provided `<Invalid />` component. 
+This eliminates a boatload of boilerplate.
+
+```javascript
+import React from "react";
+import { Link, BrowserRouter, Switch, Route } from 'react-router-dom';
+import * as Yup from 'yup';
+import Location from "react-app-location";
+
+const HomeLocation = new Location('/');
+const ArticleLocation = new Location('/articles/:id', { id: Yup.number().integer().positive().required() });
+
+const App = () => (
+    <BrowserRouter>
+        <Switch>
+            {HomeLocation.toRoute({ component: Home, invalid: NotFound }, true)}
+            {ArticleLocation.toRoute({ component: Article, invalid: NotFound }, true)}
+            <Route component={NotFound} />
+        </Switch>
+    </BrowserRouter>
+);
+
+const Home = () => (
+	<div>
+		<header>Articles</header>
+		<ul>
+			<li>{ArticleLocation.toLink({id: 1})}>Article 1</Link></li> {/* <Link to={/articles/1} /> */}
+			<li>{ArticleLocation.toLink({id: 2})}>Article 2</Link></li> {/* <Link to={/articles/2} /> */} 
+			<li><Link to={ArticleLocation.toUrl({id: 3})}>Article 3</Link></li>  {/* Also works */}
+			<li><Link to={'/articles/not-an-int'}>Article 4 (invalid)</Link></li>  {/* Renders <NotFound /> */}
+		</ul>
+	</div>
+);
+
+//id is parsed from the URL, cast to int, and provided as a prop
+const Article = ({id}) => <header>`Article ${id}`</header>;
+
+const NotFound = () => (
+	<div>
+		<header>Page not found</header>
+		<p>Looks like you have followed a broken link or entered a URL that does not exist on this site.</p>
+	</div>
+);
+```
+
+## Try it out
+
+### Online
+
+[Demo](https://bradstiff.github.io/react-app-location/)
+
+### Local
+
+1. `git clone https://github.com/bradstiff/react-app-location.git`
+2. `cd react-app-location`
+3. `npm install`
+4. `npm start`
+5. Browse to http://localhost:3001
+
+## Location API
+
+**`Location.ctor(path: string, pathParamDefs: schema, queryStringParamDefs: schema)`**
+
+Defines a `Location`.
+
+**`Location.toRoute(routeOptions: {component, render: func, children: func, invalid}, exact: bool, strict: bool, sensitive: bool)`**
+
+Renders a React Router 4 `Route` which parses params and provides them as props to your component. 
+
+**`Location.toUrl(params: object)`**
+
+Generates a URL with param values plugged in.
+
+**`Location.toLink(params: object)`**
+
+Generates a React Router 4 `Link` passing the URL as the `to` prop.
+
+## Development
+
+You're welcome to contribute to react-app-location.
+
+To set up the project:
+
+1.  Fork and clone the repository
+2.  `npm install`
+
+The project supports three workflows, described below.
+
+### Developing, testing and locally demoing the component
+
+Source and tests are located in the /src and /test folders.  
+
+To test: `npm run test`.
+
+To run the demo, `npm start`.  The demo can be seen at http://localhost:3001 in watch mode.
+
+### Publishing the module to npm
+
+`npm publish`
+
+This will use babel to transpile the component source, and publish the component and readme to npm.
+
+### Publishing the demo to github-pages
+
+`npm run publish-demo`
+
+This will build a production version of the demo and publish it to your github-pages site, in the react-app-location directory. 
+
+Note that webpack.config is set up to handle the fact the demo lives in a directory.
+
+Also note that github-pages does not support routers that use HTML5 pushState history API.  There are special scripts added to index.html and 404.html to redirect server requests for nested routes to the home page.

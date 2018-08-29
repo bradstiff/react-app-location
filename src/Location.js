@@ -9,20 +9,20 @@ const isEmptyObject = obj => Object.keys(obj).length === 0 && obj.constructor ==
 const isEmptyChildren = children => React.Children.count(children) === 0;
 
 export default class Location {
-    constructor(path, pathTokenDefs, qsTokenDefs) {
+    constructor(path, pathParamDefs, queryStringParamDefs) {
         this._path = path;
 
         //todo: collisions between route params and qs params?
-        if (pathTokenDefs && !isEmptyObject(pathTokenDefs)) {
-            this._pathTokenKeys = Object.keys(pathTokenDefs);
-            this._pathTokens = pathTokenDefs;
-            this._pathSchema = Yup.object().shape(pathTokenDefs);
+        if (pathParamDefs && !isEmptyObject(pathParamDefs)) {
+            this._pathParamKeys = Object.keys(pathParamDefs);
+            this._pathParamDefs = pathParamDefs;
+            this._pathSchema = Yup.object().shape(pathParamDefs);
         }
 
-        if (qsTokenDefs && !isEmptyObject(qsTokenDefs)) {
-            this._qsTokenKeys = Object.keys(qsTokenDefs);
-            this._qsTokens = qsTokenDefs;
-            this._qsSchema = Yup.object().shape(qsTokenDefs);
+        if (queryStringParamDefs && !isEmptyObject(queryStringParamDefs)) {
+            this._queryStringParamKeys = Object.keys(queryStringParamDefs);
+            this._queryStringParamDefs = queryStringParamDefs;
+            this._queryStringSchema = Yup.object().shape(queryStringParamDefs);
         }
     }
 
@@ -30,33 +30,33 @@ export default class Location {
         return this._path;
     }
 
-    toUrl(tokens) {
-        const path = generatePath(this.path, tokens);
+    toUrl(params) {
+        const path = generatePath(this.path, params);
 
-        const qsTokens = this._qsTokenKeys
+        const queryStringParams = this._queryStringParamKeys
             ? Object
-                .keys(tokens || {})
-                .filter(key => this._qsTokenKeys.includes(key))
+                .keys(params || {})
+                .filter(key => this._queryStringParamKeys.includes(key))
                 .reduce((acc, key) => {
-                    const value = tokens[key] === 'undefined' ? undefined
-                        : tokens[key] === 'null' ? null
-                        : tokens[key];
-                    const tokenDef = this._qsTokens[key];
+                    const value = params[key] === 'undefined' ? undefined
+                        : params[key] === 'null' ? null
+                        : params[key];
+                    const tokenDef = this._queryStringParamDefs[key];
                     return tokenDef.default() === value
                         ? acc //avoid query string clutter: don't serialize values that are the same as the default
                         : {
-                            [key]: tokens[key],
+                            [key]: params[key],
                             ...acc
                         }
                 }, null)
             : null;
 
-        return qsTokens
-            ? `${path}?${qs.stringify(qsTokens)}`
+        return queryStringParams
+            ? `${path}?${qs.stringify(queryStringParams)}`
             : path;
     }
 
-    toLink = tokens => props => <Link {...props} to={this.toUrl(tokens)} />;
+    toLink = params => props => <Link {...props} to={this.toUrl(params)} />;
 
     toRoute(renderOptions, exact = false, strict = false, sensitive = false) {
         const { component, render, children, invalid } = renderOptions;
@@ -64,7 +64,7 @@ export default class Location {
             throw new Error('Location.toRoute requires renderOptions argument, which must include either component, render or children property');
         }
         if (!invalid) {
-            throw new Error('Location.toRoute requires renderOptions argument, which must include an invalid property, indicating the component to render when the a matched location contains an invalid token');
+            throw new Error('Location.toRoute requires renderOptions argument, which must include an invalid property, indicating the component to render when the a matched location contains an invalid parameter');
         }
 
         const routeProps = {
@@ -74,70 +74,64 @@ export default class Location {
             sensitive,
         };
 
+        const getPropsWithParams = props => {
+            const { location, match } = props;
+            const tokens = this.parseParams(location, match);
+            if (tokens === null) {
+                return null;
+            }
+            //todo: collision between props and tokens?
+            return {
+                ...props,
+                ...tokens,
+            };
+        }
+
         if (component) {
-            return <Route {...routeProps} render={this.wrapComponentWithTokens(component, invalid)} />
+            return <Route {...routeProps} render={props => {
+                const propsWithParams = getPropsWithParams(props)
+                if (propsWithParams === null) {
+                    //schema validation error ocurred, render Invalid component
+                    return React.createElement(invalid);
+                }
+                return React.createElement(component, propsWithParams);
+            }} />
         } else if (render) {
-            return <Route {...routeProps} render={this.wrapRenderPropWithTokens(render, invalid)} />
+            return <Route {...routeProps} render={props => {
+                const propsWithParams = getPropsWithParams(props)
+                if (propsWithParams === null) {
+                    //schema validation error ocurred, render Invalid component
+                    return React.createElement(invalid);
+                }
+                return render(propsWithParams);
+            }} />
         } else if (typeof children === "function") {
-            return <Route {...routeProps} children={this.wrapChildrenPropWithTokens(children, invalid)} />
+            return <Route {...routeProps} children={props => {
+                const { match } = props;
+                if (match) {
+                    const propsWithParams = getPropsWithParams(props)
+                    if (propsWithParams === null) {
+                        //schema validation error ocurred, render Invalid component
+                        return React.createElement(invalid);
+                    }
+                    return children(propsWithParams);
+                } else {
+                    return children(props);
+                }
+            }} />
         } else if (children && !isEmptyChildren(children)) {
-            warning(true, 'Location tokens are not passed as props to children arrays. Use a children function prop if needed.');
+            warning(true, 'Location params are not passed as props to children arrays. Use a children function prop if needed.');
             return <Route {...routeProps} children={children} />
         }
     }
 
-    wrapComponentWithTokens = (component, invalid) => props => {
-        const propsWithTokens = this.propsWithTokens(props)
-        if (propsWithTokens === null) {
-            //schema validation error ocurred, render Invalid component
-            return React.createElement(invalid);
-        }
-        return React.createElement(component, propsWithTokens);
-    }
-
-    wrapRenderPropWithTokens = (render, invalid) => props => {
-        const propsWithTokens = this.propsWithTokens(props)
-        if (propsWithTokens === null) {
-            //schema validation error ocurred, render Invalid component
-            return React.createElement(invalid);
-        }
-        return render(propsWithTokens);
-    }
-
-    wrapChildrenPropWithTokens = (children, invalid) => props => {
-        const { match } = props;
-        if (match) {
-            const propsWithTokens = this.propsWithTokens(props)
-            if (propsWithTokens === null) {
-                //schema validation error ocurred, render Invalid component
-                return React.createElement(invalid);
-            }
-            return children(propsWithTokens);
-        } else {
-            return children(props);
-        }
-    }
-
-    propsWithTokens(props) {
-        const { location, match } = props;
-        const tokens = this.parseTokens(location, match);
-        if (tokens === null) {
-            return null;
-        }
-        //todo: collision between props and tokens?
-        return {
-            ...props,
-            ...tokens,
-        };
-    }
-
-    parseTokens(location, match) {
-        const qsParams = qs.parse(location.search);
-        for (const key in qsParams) {
-            if (qsParams[key] === 'null') {
-                qsParams[key] = null;
-            } else if (qsParams[key] === 'undefined') {
-                qsParams[key] = undefined;
+    parseParams(location, match) {
+        const queryStringParams = qs.parse(location.search);
+        for (const key in queryStringParams) {
+            if (queryStringParams[key] === 'null') {
+                queryStringParams[key] = null;
+            } else if (queryStringParams[key] === 'undefined') {
+                queryStringParams[key] = undefined;
             }
         }
         let pathValues, qsValues;
@@ -145,8 +139,8 @@ export default class Location {
             pathValues = this._pathSchema
                 ? this._pathSchema.validateSync(match.params)
                 : {};
-            qsValues = this._qsSchema
-                ? this._qsSchema.validateSync(qsParams)
+            qsValues = this._queryStringSchema
+                ? this._queryStringSchema.validateSync(queryStringParams)
                 : {};
         } catch (err) {
             if (process.env.NODE_ENV === 'development') {

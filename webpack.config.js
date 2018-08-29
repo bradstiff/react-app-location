@@ -10,7 +10,7 @@ const htmlWebpackPlugin = new HtmlWebpackPlugin({
 module.exports = (env, argv) => {
     const PUBLIC_URL = argv.mode === 'development'
         ? '/'
-        : '/react-location'; //because of gh-pages
+        : '/react-app-location'; //because of gh-pages
 
     return {
         entry: "./examples/src/app/index.js",
