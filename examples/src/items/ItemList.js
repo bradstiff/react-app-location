@@ -70,7 +70,7 @@ class ItemList extends React.Component {
                             .filter(item => (isActive === undefined || item.isActive === isActive) && (categoryID === undefined || item.categoryID === categoryID))
                             .map(item => (
                                 <tr key={item.id}>
-                                    <td><Link to={ItemLocation.toUrl({ id: item.id })}>{item.name}</Link></td>
+                                    <td>{ItemLocation.toLink(item.name, { id: item.id })}</td>
                                     <td>{itemCategory(item)}</td>
                                     <td>{itemStatus(item)}</td>
                                 </tr>

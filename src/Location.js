@@ -56,7 +56,15 @@ export default class Location {
             : path;
     }
 
-    toLink = params => props => <Link {...props} to={this.toUrl(params)} />;
+    toLink(children, params, props) {
+        let linkProps = props || {}
+        warning(!linkProps.to, 'You should not provide a to prop; it will be overwritten');
+        linkProps = {
+            ...linkProps,
+            to: this.toUrl(params), 
+        };
+        return <Link {...linkProps}>{children}</Link>;
+    }
 
     toRoute(renderOptions, exact = false, strict = false, sensitive = false) {
         const { component, render, children, invalid } = renderOptions;

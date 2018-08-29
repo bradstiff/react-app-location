@@ -40,10 +40,10 @@ const Home = () => (
 	<div>
 		<header>Articles</header>
 		<ul>
-			<li>{ArticleLocation.toLink({id: 1})}>Article 1</Link></li> {/* <Link to={/articles/1} /> */}
-			<li>{ArticleLocation.toLink({id: 2})}>Article 2</Link></li> {/* <Link to={/articles/2} /> */} 
+			<li>{ArticleLocation.toLink('Article 1', {id: 1})}</li> {/* <Link to={'/articles/1'}>Article 1</Link> */}
+			<li>{ArticleLocation.toLink('Article 2', {id: 2})}</li> {/* <Link to={'/articles/2'}>Article 2</Link> */} 
 			<li><Link to={ArticleLocation.toUrl({id: 3})}>Article 3</Link></li>  {/* Also works */}
-			<li><Link to={'/articles/not-an-int'}>Article 4 (invalid)</Link></li>  {/* Renders <NotFound /> */}
+			<li><Link to={'/articles/not-an-int'}>Article 4 (invalid)</Link></li>  {/* Results in <NotFound /> */}
 		</ul>
 	</div>
 );
@@ -87,7 +87,7 @@ Renders a React Router 4 `Route` which parses params and provides them as props 
 
 Generates a URL with param values plugged in.
 
-**`Location.toLink(params: object)`**
+**`Location.toLink(children, params: object, props)`**
 
 Generates a React Router 4 `Link` passing the URL as the `to` prop.
 
