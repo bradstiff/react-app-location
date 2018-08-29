@@ -54,7 +54,7 @@ const Home = () => (
     </div>
 );
 
-//id is parsed from the URL, cast to int, and provided in props
+//id is parsed from the URL, cast to int, and passed in props
 const Article = ({id}) => <header>`Article ${id}`</header>;
 
 const NotFound = () => (
@@ -64,6 +64,38 @@ const NotFound = () => (
     </div>
 );
 ```
+
+## API
+
+**`Location.ctor(path: string, pathParamDefs: ?schema, queryStringParamDefs: ?schema): Location`**
+
+Defines a `Location`. pathParamDefs and queryStringParamDefs are optional and specified as Yup schemas.
+
+**`Location.toUrl(params: ?object): string`**
+
+Builds a URL with param values plugged in.
+
+**`Location.toLink(children: node, params: ?object, props: ?object): element`**
+
+Generates a React Router 4 `Link` passing the generated URL as the `to` prop.
+
+<pre><strong>Location.toRoute(
+	renderOptions: {
+		component: ?element, 
+		render: ?func, 
+		children: ?func, 
+		invalid: element
+	}, 
+	exact: bool = false, 
+	strict: bool = false, 
+	sensitive: bool = false
+): element</strong></pre>
+
+Generates a React Router 4 `Route` which parses params and passes them as props to your component. 
+
+**`Location.path: string`**
+
+Returns the path property which you can use when building a Route by hand, e.g., without params passed as props.
 
 ## Try it out
 
@@ -79,29 +111,7 @@ const NotFound = () => (
 4. `npm start`
 5. Browse to http://localhost:3001
 
-## Location API
-
-**`Location.ctor(path: string, pathParamDefs: schema, queryStringParamDefs: schema)`**
-
-Defines a `Location`.
-
-**`Location.toUrl(params: object)`**
-
-Generates a URL with param values plugged in.
-
-**`Location.toLink(children, params: object, props)`**
-
-Generates a React Router 4 `Link` passing the URL as the `to` prop.
-
-**`Location.toRoute(routeOptions: {component, render: func, children: func, invalid}, exact: bool, strict: bool, sensitive: bool)`**
-
-Renders a React Router 4 `Route` which parses params and passes them as props to your component. 
-
-**`Location.path`**
-
-Returns the path property which you can use when building a Route by hand, e.g., without params passed as props.
-
-## Development
+## Contribute
 
 You're welcome to contribute to react-app-location.
 
