@@ -1,6 +1,6 @@
 {
   "name": "react-app-location",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A package to avoid repetition with Routes and URLs, and reduce boilerplate with location param parsing in React Apps",
   "main": "./dist/Location.js",
   "repository": "https://github.com/bradstiff/react-app-location.git",
