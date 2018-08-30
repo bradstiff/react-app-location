@@ -75,16 +75,16 @@ Defines a `Location`. pathParamDefs and queryStringParamDefs are optional and sp
 
 Builds a URL with param values plugged in.
 
-**`Location.toLink(children: node, params: ?object, props: ?object): element`**
+**`Location.toLink(children: func || node, params: ?object, props: ?object): element`**
 
 Generates a React Router 4 `Link` passing the generated URL as the `to` prop.
 
 <pre><strong>Location.toRoute(
 	renderOptions: {
-		component: ?element, 
+		component: ?func, 
 		render: ?func, 
-		children: ?func, 
-		invalid: element
+		children: ?func || ?node, 
+		invalid: func
 	}, 
 	exact: bool = false, 
 	strict: bool = false, 
