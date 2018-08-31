@@ -44,10 +44,10 @@ export default class Location {
 
         const path = generatePath(this.path, params);
 
-        const queryStringParams = this._queryStringParamKeys
+        const queryStringParams = !isEmptyObject(this._queryStringParamKeys)
             ? Object
                 .keys(params || {})
-                .filter(key => this._queryStringParamKeys.includes(key))
+                .filter(key => this._queryStringParamKeys.indexOf(key) > -1)
                 .reduce((acc, key) => {
                     const value = params[key] === 'undefined' ? undefined
                         : params[key] === 'null' ? null
