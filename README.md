@@ -97,6 +97,12 @@ Generates a React Router 4 `Route` which parses params and passes them as props 
 
 Returns the path property which you can use when building a Route by hand, e.g., without params passed as props.
 
+**`Location.parseLocationParams(location: object, match: object) : object`**
+
+Returns an object containing the parameters parsed from the react-router `location` and react-router `match`. Each parameter is validated and cast to the data type indicated in the schema. If validation fails, returns null.
+
+You can manually call `parseLocationParams` from within your component to get the location parameters if you prefer to not use the automatic param parsing and prop injection provided by `Location.toRoute`.
+
 ## Try it out
 
 ### Online

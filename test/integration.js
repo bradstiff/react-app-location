@@ -243,3 +243,22 @@ test('children no match, renders anyway without param parsing', () => {
     const { container, debug } = renderWithRouter(<ChildrenRoute />, '/does-not-match');
     expect(container.innerHTML).toMatch('Resource');
 })
+
+test('bypass Location.toRoute', () => {
+    const locationParams = { id: 1, date: '2018-08-20' };
+    const serializedUrl = ResourceLocation.toUrl(locationParams);
+    const ResourceWithManualParams = ({ location, match }) => {
+        const { id, date } = ResourceLocation.parseLocationParams(location, match);
+        //save the received props for subsequent test verification
+        receivedProps = {
+            id,
+            date
+        };
+        return <div>Resource</div>;
+    };
+    const ResourceRoute = () => <Route path={ResourceLocation.path} component={ResourceWithManualParams} exact />;
+  const { container } = renderWithRouter(<ResourceRoute />, serializedUrl);
+    expect(container.innerHTML).toMatch('Resource');
+    expect(receivedProps.id).toBe(1);
+    expect(receivedProps.date).toMatch('2018-08-20');
+})
