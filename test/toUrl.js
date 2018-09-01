@@ -5,13 +5,9 @@ import * as Yup from 'yup';
 import Location from '../src/Location';
 
 const isNullableDate = Yup.string().test('is-date', '${path}:${value} is not a valid date', date => !date || !isNaN(Date.parse(date)));
-const string = Yup.string();
 const integer = Yup.number().integer();
 const naturalNbr = integer.moreThan(-1);
 const wholeNbr = integer.positive();
-
-const HomeLocation = new Location('/');
-const AboutLocation = new Location('/about');
 
 const ResourceListLocation = new Location('/resources', null, {
     typeID: wholeNbr.required(),
@@ -23,18 +19,25 @@ const ResourceListLocation = new Location('/resources', null, {
 });
 const ResourceLocation = new Location('/resources/:id', { id: wholeNbr.required() }, { date: isNullableDate });
 
-const NotFound = () => <div>No match</div>;
-const Home = () => <div>Home</div>;
-const About = () => <div>About</div>;
-
 afterEach(cleanup);
 
-test('builds URL with omitted-with-default qs params', () => {
+test('builds URL with path param', () => {
+    const serializedUrl = ResourceLocation.toUrl({ id: 1 }); //should be id:1
+    expect(serializedUrl).toBe('/resources/1');
+})
+
+test('errors on building a URL with missing required path params', () => {
+    jest.spyOn(global.console, "error").mockImplementation(() => { })
+    const serializedUrl = ResourceLocation.toUrl({ resourceID: 1 }); //should be id:1
+    expect(console.error).toBeCalled();
+})
+
+test('builds URL with no path params and omitted-with-default qs params', () => {
     const serializedUrl = ResourceListLocation.toUrl({ typeID: 2 });
     expect(serializedUrl).toBe('/resources?typeID=2'); //to avoid clutter, omitted-with-default qs params are not written to the url
 })
 
-test('builds URL with supplied qs params', () => {
+test('builds URL with all qs params supplied', () => {
     const locationParams = {
         typeID: 2,
         page: 1,
@@ -46,32 +49,8 @@ test('builds URL with supplied qs params', () => {
     expect(serializedUrl).toBe('/resources?isActive=true&order=desc&rowsPerPage=50&page=1&typeID=2');
 })
 
-test('errors on building a URL with missing required path params', () => {
-    jest.spyOn(global.console, "error").mockImplementation(() => { })
-    const serializedUrl = ResourceLocation.toUrl({ resourceID: 1 }); //should be id:1
-    expect(console.error).toBeCalled();
-})
-
 test('errors on building a URL with missing required qs params', () => {
     jest.spyOn(global.console, "error").mockImplementation(() => { })
     const serializedUrl = ResourceListLocation.toUrl({ categoryID: 1 }); //should be typeID:1
-    expect(console.error).toBeCalled();
-})
-
-test('errors when neither component, render nor children properties are provided', () => {
-    jest.spyOn(global.console, "error").mockImplementation(() => { })
-    HomeLocation.toRoute({ invalid: NotFound });
-    expect(console.error).toBeCalled();
-})
-
-test('errors when invalid property is not provided', () => {
-    jest.spyOn(global.console, "error").mockImplementation(() => { })
-    HomeLocation.toRoute({ component: Home });
-    expect(console.error).toBeCalled();
-})
-
-test('warning when children node is provided', () => {
-    jest.spyOn(global.console, "error").mockImplementation(() => { })
-    HomeLocation.toRoute({ children: <Home />, invalid: NotFound });
     expect(console.error).toBeCalled();
 })
