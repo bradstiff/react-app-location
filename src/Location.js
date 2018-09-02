@@ -9,31 +9,61 @@ const isEmptyObject = obj => Object.keys(obj).length === 0 && obj.constructor ==
 const isEmptyChildren = children => React.Children.count(children) === 0;
 
 export default class Location {
+
+    _pathParamKeys = {};
+    _pathParamDefs = {};
+    _queryStringParamKeys = {};
+    _queryStringParamDefs = {};
+
     constructor(path, pathParamDefs, queryStringParamDefs) {
         this._path = path;
 
-        //todo: collisions between route params and qs params?
+        //todo: warn about collisions between route params and qs params
         if (pathParamDefs && !isEmptyObject(pathParamDefs)) {
             this._pathParamKeys = Object.keys(pathParamDefs);
             this._pathParamDefs = pathParamDefs;
             this._pathSchema = Yup.object().shape(pathParamDefs);
-        } else {
-            this._pathParamKeys = {};
-            this._pathParamDefs = {};
-        }
+        } 
 
         if (queryStringParamDefs && !isEmptyObject(queryStringParamDefs)) {
             this._queryStringParamKeys = Object.keys(queryStringParamDefs);
             this._queryStringParamDefs = queryStringParamDefs;
             this._queryStringSchema = Yup.object().shape(queryStringParamDefs);
-        } else {
-            this._queryStringParamKeys = {};
-            this._queryStringParamDefs = {};
-        }
+        } 
     }
 
     get path() {
         return this._path;
+    }
+
+    generateQueryString(params) {
+        if (isEmptyObject(this._queryStringParamKeys)) {
+            //Location has no query string params
+            return null;
+        }
+
+        const queryStringParams = Object
+            .keys(params || {})
+            .filter(key => this._queryStringParamKeys.indexOf(key) > -1)
+            .reduce((acc, key) => {
+                const value = params[key] === 'undefined' ? undefined
+                    : params[key] === 'null' ? null
+                        : params[key];
+                const tokenDef = this._queryStringParamDefs[key];
+                return tokenDef.default() === value
+                    ? acc //avoid query string clutter: don't serialize values that are the same as the default
+                    : {
+                        [key]: params[key],
+                        ...acc
+                    }
+            }, null);
+
+        if (!queryStringParams) {
+            //no query string params provided
+            return null;
+        }
+
+        return qs.stringify(queryStringParams);
     }
 
     toUrl(params) {
@@ -43,33 +73,16 @@ export default class Location {
         }
 
         const path = generatePath(this.path, params);
+        const queryString = this.generateQueryString(params);
 
-        const queryStringParams = !isEmptyObject(this._queryStringParamKeys)
-            ? Object
-                .keys(params || {})
-                .filter(key => this._queryStringParamKeys.indexOf(key) > -1)
-                .reduce((acc, key) => {
-                    const value = params[key] === 'undefined' ? undefined
-                        : params[key] === 'null' ? null
-                        : params[key];
-                    const tokenDef = this._queryStringParamDefs[key];
-                    return tokenDef.default() === value
-                        ? acc //avoid query string clutter: don't serialize values that are the same as the default
-                        : {
-                            [key]: params[key],
-                            ...acc
-                        }
-                }, null)
-            : null;
-
-        return queryStringParams
-            ? `${path}?${qs.stringify(queryStringParams)}`
+        return queryString
+            ? `${path}?${queryString}`
             : path;
     }
 
     toLink(children, params, props) {
         let linkProps = props || {}
-        warning(!linkProps.to, 'You should not provide a to prop; it will be overwritten');
+        warning(!linkProps.to, 'toLink props should not include a to prop; it will be overwritten');
         linkProps = {
             ...linkProps,
             to: this.toUrl(params), 
@@ -95,7 +108,7 @@ export default class Location {
             if (tokens === null) {
                 return null;
             }
-            //todo: collision between props and tokens?
+            //todo: warn about collisions between route params and qs params
             return {
                 ...props,
                 ...tokens,
@@ -140,8 +153,8 @@ export default class Location {
         }
     }
 
-    parseLocationParams(location, match) {
-        const queryStringParams = qs.parse(location.search);
+    parseQueryStringValues(queryString) {
+        const queryStringParams = qs.parse(queryString);
         for (const key in queryStringParams) {
             if (queryStringParams[key] === 'null') {
                 queryStringParams[key] = null;
@@ -149,11 +162,18 @@ export default class Location {
                 queryStringParams[key] = undefined;
             }
         }
+        return queryStringParams;
+    }
+
+    parseLocationParams(location, match) {
         let pathValues, qsValues;
         try {
+            const pathParams = match.params;
             pathValues = this._pathSchema
                 ? this._pathSchema.validateSync(match.params)
                 : {};
+
+            const queryStringParams = this.parseQueryStringValues(location.search);
             qsValues = this._queryStringSchema
                 ? this._queryStringSchema.validateSync(queryStringParams)
                 : {};
