@@ -1,5 +1,10 @@
 # react-app-location
-A package to avoid repetition with Routes, Links and URLs, and reduce boilerplate with location param parsing in React Apps
+Declarative locations for <a href="https://facebook.github.io/react">React</a> apps. Avoids repetition with Routes and Links, and reduces boilerplate with parsing and casting parameters from URLs.
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-app-location"><img src="https://img.shields.io/npm/v/react-app-location.svg?style=flat-square"></a>
+  <a href="https://www.npmjs.com/package/react-app-location"><img src="https://img.shields.io/npm/dm/react-app-location.svg?style=flat-square"></a>
+</p>
+
 ## Install
 
 `npm install react-app-location --save`
@@ -10,11 +15,11 @@ A `Location` is an endpoint that your app supports.  It specifies a path, and ca
 
 A `Location` keeps your code DRY as the `Location` is defined in one place and used throughout your code to generate `Routes`, `Links` and URLs. 
 
-When generating a URL, you can provide a literal object of values, and the values will be mapped to parameters and inserted into the resulting URL.
+When generating a `Link` or URL, you can provide a literal object of values, and the values will be mapped to path and query string parameters and inserted into the resulting URL.
 
 Path and query string parameters are specified as Yup schemas. A `Route` that is generated from a `Location` automatically parses the URL and extracts 
 the path and query string parameters. These are validated according to the schema, cast to the appropriate data types, and passed as props to your 
-component.  If a required parameter is missing or a parameter fails validation, the `Route` will render the provided `<Invalid />` component. 
+component.  If a required parameter is missing or a parameter fails validation, the `Route` will render the specified `<Invalid />` component. 
 This eliminates a boatload of boilerplate.
 
 ```javascript
@@ -31,7 +36,7 @@ const App = () => (
         <Switch>
             {/* Regular Route */}
             <Route path={HomeLocation.path} component={Home} exact />
-            {/* Route with params passed as props to your component */}
+            {/* Route with params automatically passed as props to your component */}
             {ArticleLocation.toRoute({ component: Article, invalid: NotFound }, true)}
             <Route component={NotFound} />
         </Switch>
@@ -49,12 +54,14 @@ const Home = () => (
             {/* Also works */}
             <li><Link to={ArticleLocation.toUrl({id: 3})}>Article 3</Link></li>  
             {/* Clicking results in <NotFound /> */}
-            <li><Link to={'/articles/not-an-int'}>Article 4 (invalid)</Link></li>  
+            <li><Link to={ArticleLocation.toUrl({id: 'oops-not-an-int'})}>Article 4</Link></li>  
+            {/* Also results in <NotFound /> */}
+            <li><Link to={'/articles/oops-not-an-int'}>Article 5</Link></li>  
         </ul>
     </div>
 );
 
-//id is parsed from the URL, cast to int, and passed in props
+//id has been parsed from the URL, cast to int, and merged into props
 const Article = ({id}) => <header>`Article ${id}`</header>;
 
 const NotFound = () => (
