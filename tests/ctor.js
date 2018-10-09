@@ -15,16 +15,12 @@ test('constructs with no params', () => {
     const HomeLocation = new Location('/');
     expect(HomeLocation).toBeDefined();
     expect(HomeLocation.path).toMatch('/');
-    expect(HomeLocation._pathSchema).toBeUndefined();
-    expect(HomeLocation._queryStringSchema).toBeUndefined();
 })
 
 test('constructs with path params', () => {
     const ResourceLocation = new Location('/resources/:id', { id: wholeNbr.required() });
     expect(ResourceLocation).toBeDefined();
     expect(ResourceLocation.path).toMatch('/resources/:id');
-    expect(ResourceLocation._pathSchema).toBeDefined();
-    expect(ResourceLocation._queryStringSchema).toBeUndefined();
 })
 
 test('constructs with query string params', () => {
@@ -38,8 +34,6 @@ test('constructs with query string params', () => {
     });
     expect(ResourceListLocation).toBeDefined();
     expect(ResourceListLocation.path).toMatch('/resources');
-    expect(ResourceListLocation._pathSchema).toBeUndefined();
-    expect(ResourceListLocation._queryStringSchema).toBeDefined();
 })
 
 

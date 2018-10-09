@@ -36,6 +36,21 @@ test('parses URL with path param', () => {
     expect(params).toMatchObject({ id: 1 });
 })
 
+test('parses URL with path param, match is omitted', () => {
+    const location = {
+        pathname: '/resources/1',
+        search: '',
+    }
+    const match = {
+        params: {
+            id: '1'
+        }
+    };
+
+    const params = ResourceLocation.parseLocationParams(location, match);
+    expect(params).toMatchObject({ id: 1 });
+})
+
 test('errors on parsing a URL with missing required path params', () => {
     jest.spyOn(global.console, "error").mockImplementation(() => { })
     const location = {
