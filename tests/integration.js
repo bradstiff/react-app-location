@@ -25,10 +25,14 @@ const ResourceListLocation = new Location('/resources', null, {
     categoryID: wholeNbr.nullable(),
 });
 const ResourceLocation = new Location('/resources/:id', { id: wholeNbr.required() }, { date: isNullableDate });
+const ProtectedResourceLocation = new Location('/protectedResources/:id', { id: wholeNbr.required() }, { date: isNullableDate });
 
 //placeholder for parsed, type-cast props received by matching location's component
 //strictly used for test verification
 let receivedProps = {};
+
+//allow access to protected routes
+let isAuthorized = false;
 
 const Home = () => <div>Home</div>;
 const About = () => <div>About</div>;
@@ -55,6 +59,13 @@ const Resource = ({ id, date }) => {
 };
 
 const NotFound = () => <div>No match</div>;
+const NotAuthorized = () => <div>Not authorized</div>;
+
+function ifAuthorized(test, protectedComponent, notAuthorizedComponent) {
+    return test
+        ? protectedComponent
+        : notAuthorizedComponent;
+}
 
 function LocationTest() {
     return (
@@ -66,6 +77,7 @@ function LocationTest() {
                 {AboutLocation.toRoute({ render: () => <About />, invalid: NotFound }, true)}
                 {ResourceListLocation.toRoute({ component: ResourceList, invalid: NotFound }, true)}
                 {ResourceLocation.toRoute({ component: Resource, invalid: NotFound }, true)}
+                {ProtectedResourceLocation.toRoute({ component: ifAuthorized(isAuthorized, Resource, NotAuthorized), invalid: NotFound }, true)}
                 <Route component={NotFound} />
             </Switch>
         </div>
@@ -75,6 +87,7 @@ function LocationTest() {
 afterEach(() => {
     cleanup();
     receivedProps = {};
+    isAuthorized = false;
 });
 
 function renderWithRouter(ui, url = '/') {
@@ -257,8 +270,20 @@ test('bypass Location.toRoute', () => {
         return <div>Resource</div>;
     };
     const ResourceRoute = () => <Route path={ResourceLocation.path} component={ResourceWithManualParams} exact />;
-  const { container } = renderWithRouter(<ResourceRoute />, serializedUrl);
+    const { container } = renderWithRouter(<ResourceRoute />, serializedUrl);
     expect(container.innerHTML).toMatch('Resource');
     expect(receivedProps.id).toBe(1);
     expect(receivedProps.date).toMatch('2018-08-20');
+})
+
+test('renders protected component when authorized', () => {
+    isAuthorized = true;
+    const { container } = renderWithRouter(<LocationTest />, '/protectedResources/1');
+    expect(container.innerHTML).toMatch('Resource');
+})
+
+test('renders not authorized component when not authorized', () => {
+    isAuthorized = false;
+    const { container } = renderWithRouter(<LocationTest />, '/protectedResources/1');
+    expect(container.innerHTML).toMatch('Not authorized');
 })
