@@ -109,6 +109,10 @@ Returns a literal object containing the parameters parsed from the React Router 
 
 You can manually call `parseLocationParams` from within your component to get the location parameters if you prefer to not use the automatic param parsing and prop injection provided by `Location.toRoute`.
 
+**`Location.isValidParams(params: ?object): boolean`**
+
+Returns a boolean indicating if the parameters are valid.
+
 ## Try it out
 ### Online
 [Demo](https://bradstiff.github.io/react-app-location/)

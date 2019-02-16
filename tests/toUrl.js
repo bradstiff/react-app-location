@@ -19,7 +19,10 @@ const ResourceListLocation = new Location('/resources', null, {
 });
 const ResourceLocation = new Location('/resources/:id', { id: wholeNbr.required() }, { date: isNullableDate });
 
-afterEach(cleanup);
+afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+});
 
 test('builds URL with path param', () => {
     const serializedUrl = ResourceLocation.toUrl({ id: 1 }); //should be id:1
@@ -53,4 +56,14 @@ test('errors on building a URL with missing required qs params', () => {
     jest.spyOn(global.console, "error").mockImplementation(() => { })
     const serializedUrl = ResourceListLocation.toUrl({ categoryID: 1 }); //should be typeID:1
     expect(console.error).toBeCalled();
+})
+
+test('returns null with no errors instead of building a URL with missing required qs params', () => {
+    jest.spyOn(global.console, "error").mockImplementation(() => { })
+    const params = { categoryID: 1 }; //invalid, should be typeID:1
+    const serializedUrl = ResourceListLocation.isValidParams(params)
+        ? ResourceListLocation.toUrl(params)
+        : null;
+    expect(serializedUrl).toBeNull();
+    expect(console.error).toBeCalledTimes(0);
 })

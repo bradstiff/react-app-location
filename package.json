@@ -52,7 +52,7 @@
     "yup": "^0.26.3"
   },
   "dependencies": {
-    "app-location": "^1.0.3",
+    "app-location": "^1.1.1",
     "querystringify": "^2.0.0",
     "warning": "^4.0.2"
   },
